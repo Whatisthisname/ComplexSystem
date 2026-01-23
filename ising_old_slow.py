@@ -111,3 +111,11 @@ state.generate_gif(steps=50)
 plt.plot(range(len(state.magnetizations)), state.magnetizations)
 plt.title("Magnetization over time")
 plt.show()
+
+
+# state = [-1, -1, -1, -1, -1]
+# adj = [0, 1, 0, 0, 0]
+#       [1, 0, 1, 0, 0]
+#       [0, 1, 0, 1, 0]
+#       [0, 0, 1, 0, 1]
+#       [0, 0, 0, 1, 0]
