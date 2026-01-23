@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import deque
-import numpy as np
 
 class Sparse_Adjacency_Matrix:
     def __init__(self, adjacency_matrix: np.ndarray):
@@ -99,7 +98,6 @@ class BeliefState:
 
 
 
-
 def connected_components_by_belief(
     sparse_adj: Sparse_Adjacency_Matrix,
     belief_state: np.ndarray,
@@ -136,6 +134,7 @@ def connected_components_by_belief(
         components.append(component)
 
     return components
+
 def bfs_distances(sparse_adj: Sparse_Adjacency_Matrix, source: int, allowed_nodes: set):
     """
     Compute shortest-path distances from a source node
@@ -176,6 +175,7 @@ def component_diameter(
         max_distance = max(max_distance, local_max)
 
     return max_distance
+
 def belief_state_diameters_over_time(sparse_adj: Sparse_Adjacency_Matrix, all_states: list[np.ndarray], belief_values=(-1, 0, 1)):
     """
     For each timestep and belief value, compute the
@@ -203,7 +203,6 @@ def belief_state_diameters_over_time(sparse_adj: Sparse_Adjacency_Matrix, all_st
 
     return results
 
-
 adj = generate_erdos_renyi_adjacency_mat(num_nodes=500, edge_prob=0.1)
 network = BeliefState(
     sparse_adj=adj,
@@ -212,7 +211,6 @@ network = BeliefState(
     µ=1.0,
     beta=5,
 )
-
 network.run(steps=50)
 
 # will hold, for each timestep, a list of numbers in [-1, 0, 1] with the corresponding state for that node at that time
@@ -225,11 +223,11 @@ diameters = belief_state_diameters_over_time(
     all_states=network.all_states
 )
 plt.figure(figsize=(8, 5))
-for belief, values in longest_paths.items():
+for belief, values in diameters.items():
     plt.plot(values, label=f"Belief {belief}")
 
 plt.xlabel("Time step")
 plt.ylabel("Longest shortest path")
-plt.title("The longest diamater per belief state")
+plt.title("The longest diameter per belief state")
 plt.legend()
 plt.show()
