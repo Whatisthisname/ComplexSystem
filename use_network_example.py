@@ -25,7 +25,6 @@ network = ising_efficient.BeliefNetwork(
     beta=0.5,
 )
 
-
 result = network.run_for_steps(200)
 magnetization = np.mean(result, axis=1)
 plt.plot(magnetization)
