@@ -37,6 +37,7 @@ class BeliefNetwork:
         self.state = self.init_state
         self.prev_state = self.state
         self.graph_adjacency_mat = sparse_adj
+        self.all_states = [self.init_state] #added this as it's used later for diameter
         assert 0 <= µ <= 1, (
             "The memory-parameter µ should be in [0, 1] to remain interpretable"
         )
