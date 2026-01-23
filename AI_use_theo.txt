@@ -1,0 +1,33 @@
+Using GPT-4o, 23.01.2026 11:55:31
+
+Context: This is for when I wanted to use JAX to speed up the simulation, and I foresaw some conflict between the dynamic sizes of amounts of neighbors and the fixed size requirements for JAX.
+
+# Prompt:
+
+Hello! I have this project where I want to speed up my code. It's a kind of ising model simulation on arbitrary graphs. I want to be able to efficiently get neighbors and their edge weights. So far I am doing it with numpy in the "sparse_adjacency_matrix" class.
+
+In my step() function in the BeliefNetwork, I am looping over all nodes in a random order. However, I could just do them all in parallel / vectorized which is what I am hoping to do. I would like to use JAX for this so that it can be compiled and fast. However, I am wondering how and if I'd be able to use my existing sparse_adjacency_matrix function to get neighbors, because it returns arrays of dynamic sizes.
+
+What could I do to make it vmap / pmappable? Or are there other obvious ways to speed up my code?
+
+# Reply (paraphrased / summarized):
+
+Suggestions about using a dense matrix (I don't want this)
+Suggestion about precomputing fixed-size neighborhood arrays (I think this is what we need)
+
+# Prompt:
+
+Precomputing the fixed-size neighbor arrays seems sensible. But, could I maybe just use some python multiprocessing to speed up the for loop too? Or would JAX always beat this?
+
+# Reply (paraphrased / summarized):
+
+JAX will be faster but a bit more cumbersome to implement. (So I will do this!)
+
+# Prompt:
+
+Alright. Let's then precompute the neighborhood information in a fixed size array. For this we will need to know the maximum degree as well, which can be inferred.
+Please add a function to sparse_adjacency_matrix that spits out these two contiguous 2D arrays, one with neighborhoods idxs (maybe with -1 for None) and one with weights (with 0 for None)
+
+# Reply:
+
+*Some code that I used in the Sparse_Adjacency_Matrix class in the precompute function*
