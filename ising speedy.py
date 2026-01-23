@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+from collections import deque
+import numpy as np
 
 class Sparse_Adjacency_Matrix:
     def __init__(self, adjacency_matrix: np.ndarray):
@@ -86,7 +87,7 @@ class BeliefState:
 
             self.prev_state[i] = self.state[i]
             self.state[i] = sample
-        self.all_states.append(np.copy(network))
+        self.all_states.append(np.copy(self.state))
 
         m = np.mean(self.state)
         self.magnetizations.append(m)
@@ -95,6 +96,112 @@ class BeliefState:
     def run(self, steps: int):
         for _ in range(steps):
             self.step()
+
+
+
+
+def connected_components_by_belief(
+    sparse_adj: Sparse_Adjacency_Matrix,
+    belief_state: np.ndarray,
+    target_belief: int
+):
+    """
+    Identify connected components in the induced subgraph
+    consisting only of nodes with a given belief state.
+    """
+    visited = set()
+    components = []
+
+    for node in range(len(sparse_adj)):
+        if belief_state[node] != target_belief or node in visited:
+            continue
+
+        queue = deque([node])
+        visited.add(node)
+        component = [node]
+
+        while queue:
+            u = queue.popleft()
+            neighbors, _ = sparse_adj.get_neighbors_and_weights(u)
+
+            for v in neighbors:
+                if (
+                    belief_state[v] == target_belief
+                    and v not in visited
+                ):
+                    visited.add(v)
+                    queue.append(v)
+                    component.append(v)
+
+        components.append(component)
+
+    return components
+def bfs_distances(sparse_adj: Sparse_Adjacency_Matrix, source: int, allowed_nodes: set):
+    """
+    Compute shortest-path distances from a source node
+    restricted to an induced subgraph.
+    """
+    distances = {source: 0}
+    queue = deque([source])
+
+    while queue:
+        u = queue.popleft()
+        neighbors, _ = sparse_adj.get_neighbors_and_weights(u)
+
+        for v in neighbors:
+            if v in allowed_nodes and v not in distances:
+                distances[v] = distances[u] + 1
+                queue.append(v)
+
+    return distances
+def component_diameter(
+    sparse_adj: Sparse_Adjacency_Matrix,
+    component: list
+):
+    """
+    Compute the exact diameter of a connected component
+    using BFS from each node.
+    """
+    if len(component) <= 1:
+        return 0
+
+    component_set = set(component)
+    max_distance = 0
+
+    for node in component:
+        distances = bfs_distances(
+            sparse_adj, node, component_set
+        )
+        local_max = max(distances.values())
+        max_distance = max(max_distance, local_max)
+
+    return max_distance
+def belief_state_diameters_over_time(sparse_adj: Sparse_Adjacency_Matrix, all_states: list[np.ndarray], belief_values=(-1, 0, 1)):
+    """
+    For each timestep and belief value, compute the
+    maximum diameter among connected components.
+    """
+    results = {
+        belief: [] for belief in belief_values
+    }
+
+    for state in all_states:
+        for belief in belief_values:
+            components = connected_components_by_belief(
+                sparse_adj, state, belief
+            )
+
+            if not components:
+                results[belief].append(0)
+                continue
+
+            diameters = [
+                component_diameter(sparse_adj, comp)
+                for comp in components
+            ]
+            results[belief].append(max(diameters))
+
+    return results
 
 
 adj = generate_erdos_renyi_adjacency_mat(num_nodes=500, edge_prob=0.1)
@@ -113,7 +220,16 @@ network.all_states
 
 # need graph algorithm to detect / extract connected components. This will involve the "get_neighbors_and_weights" function on the adjacency matrix object.
 
+diameters = belief_state_diameters_over_time(
+    sparse_adj=adj,
+    all_states=network.all_states
+)
+plt.figure(figsize=(8, 5))
+for belief, values in longest_paths.items():
+    plt.plot(values, label=f"Belief {belief}")
 
-plt.plot(range(len(network.magnetizations)), network.magnetizations)
-plt.title("Magnetization over time")
+plt.xlabel("Time step")
+plt.ylabel("Longest shortest path")
+plt.title("The longest diamater per belief state")
+plt.legend()
 plt.show()
