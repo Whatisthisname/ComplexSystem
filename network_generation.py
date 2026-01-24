@@ -35,7 +35,7 @@ def generate_erdos_renyi_sparse_adjacency_matrix(
 def generate_scale_free_sparse_adjacency_matrix_jax(
     num_nodes: int,
     num_edge: int,
-    weight_range: Tuple[float, float] = (-1.0, 1.0),
+    weight_range=(-1.0, 1.0),
     seed: int = 0,
 ):
     """
@@ -97,18 +97,18 @@ def generate_scale_free_sparse_adjacency_matrix_jax(
 
         key, subkey_nodes, subkey_weights = jax.random.split(key, 3)
 
-        # preferential attachment probabilities
-        degree_slice = degrees[:node_id]
-        probs = degree_slice / jnp.sum(degree_slice)
-
-        # sample attachment targets WITHOUT replacement
-        targets = jax.random.choice(
-            subkey_nodes,
-            node_id,
-            shape=(num_edge,),
-            replace=False,
-            p=probs,
-        )
+        # preferential attachment probabilities - create mask for available nodes
+        available_mask = jnp.arange(num_nodes) < node_id
+        degree_slice = jnp.where(available_mask, degrees, 0)
+        probs = degree_slice / (jnp.sum(degree_slice) + 1e-10)  # avoid division by zero
+        
+        # sample attachment targets from all possible targets (with masking)
+        # Use gumbel-max trick to sample without replacement in a differentiable way
+        gumbels = -jnp.log(-jnp.log(jax.random.uniform(subkey_nodes, shape=(num_nodes,))))
+        # mask out unavailable nodes and nodes we've already selected
+        masked_gumbels = jnp.where(available_mask, gumbels + jnp.log(probs + 1e-10), -jnp.inf)
+        # get top num_edge indices
+        targets = jnp.argsort(-masked_gumbels)[:num_edge]
 
         # sample edge weights
         weights = jax.random.uniform(
@@ -139,7 +139,7 @@ def generate_small_world_sparse_adjacency_matrix_jax(
     num_nodes: int,
     k: int,
     p: float,
-    weight_range: (-1.0, 1.0),
+    weight_range= (-1.0, 1.0),
     seed: int = 0,
 ):
     """
@@ -234,6 +234,8 @@ def generate_small_world_sparse_adjacency_matrix_jax(
     weights = jax.random.uniform(
         key=key1, minval=w_min, maxval=w_max, shape=(num_nodes, num_nodes)
     )
-    adj = adj * weights
+    weighted_adj = adj * weights
+    # Make symmetric by averaging
+    weighted_adj = 0.5 * (weighted_adj + weighted_adj.T)
 
-    return sparse_adj_mat.Sparse_Adjacency_Matrix(adj)
+    return sparse_adj_mat.Sparse_Adjacency_Matrix(weighted_adj)
