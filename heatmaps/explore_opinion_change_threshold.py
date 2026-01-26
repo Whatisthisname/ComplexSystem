@@ -10,6 +10,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ))
 import ising_efficient
 import network_generation
 import heatmap
+import voronoi
+import pickle
+import os
 
 
 
@@ -21,7 +24,7 @@ def the_function(population_fraction : float, beta : float, steps : int) -> floa
 
     ones_init = jnp.ones(shape=(len(adj_mat),)).astype(int)
 
-    alpha = 25 #time of the peak
+    alpha = 100 #time of the peak
     gamma = 5 #width of the peak
 
     #population_fraction - fraction of people being exposed to the dynamic field
@@ -47,12 +50,36 @@ def the_function(population_fraction : float, beta : float, steps : int) -> floa
 
     return np.mean(np.array(signs) > 0.0)
 
-n = 10
-fractions = np.linspace(0.0, 0.5, n)
-betas = np.linspace(0.2, 1.5, n)
+#low_res = [(p1, p2) for p1 in np.linspace(0.0, 1.0, n) for p2 in np.linspace(0.1, 3, n)]
+high_res = [(p1, p2) for p1 in np.linspace(0.3, 1.0, 12) for p2 in np.linspace(0.5, 1.0, 5)]
+all_pairs = high_res
 
-grid, fig = heatmap.generate_2D_plot(fractions, betas, steps=50, build_and_run_network=the_function)
+data_file = "all_data.pkl"
+all_data = []
 
-plt.xlabel("Tempurerature beta")
-plt.ylabel("Population fraction exposed to dynamic field")
-plt.show()
+if os.path.exists(data_file):
+    with open(data_file, "rb") as f:
+        all_data = pickle.load(f)
+    computed_pairs = set((x[0], x[1]) for x in all_data)
+else:
+    computed_pairs = set()
+    all_data = []
+
+# Filter out pairs that have already been computed
+uncomputed_pairs = [pair for pair in all_pairs if pair not in computed_pairs]
+
+# Compute outcomes for uncomputed pairs
+outcomes = [the_function(p1, p2, steps=250) for (p1, p2) in uncomputed_pairs]
+new_data = [(p1, p2, outcome) for (p1, p2), outcome in zip(uncomputed_pairs, outcomes)]
+
+# Merge old and new data
+all_data.extend(new_data)
+
+with open("all_data.pkl", "wb") as f:
+    pickle.dump(all_data, f)
+
+pairs = np.array([[x[0], x[1]] for x in all_data])
+fraction = np.array([x[2] for x in all_data])
+
+
+voronoi.plot_triples(pairs, fraction, colorbarlabel="Fraction of Positive Final States", xlabel="Population Fraction Exposed", ylabel="Inverse Temperature")
