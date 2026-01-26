@@ -60,7 +60,7 @@ if __name__ == "__main__":
             external_field=external_field,
         )
 
-        result = net.run_for_steps(steps)
+        result = net.run_for_steps(steps, seed= 30)
 
         return np.mean(result[-1])
         
