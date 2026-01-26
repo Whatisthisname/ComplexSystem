@@ -51,7 +51,7 @@ class BeliefNetwork:
             self.graph_adjacency_mat.precompute_neighbors_and_weights()
         )
 
-    def run_for_steps(self, steps: int):
+    def run_for_steps(self, steps: int, seed: int):
         """Let s = steps and let n = number of nodes. This function runs the simulation for s steps and return a (s + 1, n) integer array which holds, for all s+1 timesteps (including time zero) the state for each node."""
         assert steps > 0, "Run for a positive amount of steps"
         return BeliefNetwork._run_for_steps(
@@ -60,6 +60,7 @@ class BeliefNetwork:
             self.weights,
             self.init_state,
             self.external_field,
+            seed,
             # *params
             self.µ,
             self.beta,
@@ -67,7 +68,7 @@ class BeliefNetwork:
 
     @staticmethod
     def _run_for_steps(
-        steps: int, neighbors, weights, init_state: State, field: Field, *params
+        steps: int, neighbors, weights, init_state: State, field: Field, seed, *params
     ):
         def _step(carry: tuple[State, State], xs) -> tuple[tuple[State, State], State]:
             state, prev_state = carry
@@ -88,7 +89,7 @@ class BeliefNetwork:
         (last_state, prev_state), all_states = jax.lax.scan(
             f=_step,
             init=(init_state, init_state),
-            xs=(jnp.arange(steps), jax.random.split(jax.random.PRNGKey(0), steps)),
+            xs=(jnp.arange(steps), jax.random.split(jax.random.PRNGKey(seed), steps)),
         )
 
         # Here we are adding the first state manually because it is dropped otherwise.
