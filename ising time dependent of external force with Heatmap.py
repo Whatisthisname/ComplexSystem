@@ -253,37 +253,3 @@ plt.xlabel("Time step")
 plt.ylabel("sign(m)")
 plt.title("Intermittent magnetization")
 plt.show()
-
-
-
-def generate_2D_plot(
-    param1,
-    param2,
-    build_network_func,
-    extract_metric,
-    steps,
-):
-    grid = np.zeros((len(param1), len(param2)))
-
-    for i, p1 in enumerate(param1):
-        for j, p2 in enumerate(param2):
-            net = build_network_func(p1, p2)
-            net.run(steps)
-            grid[i, j] = extract_metric(net)
-
-    fig, ax = plt.subplots(figsize=(7, 5))
-    im = ax.imshow(grid, origin="lower", aspect="auto", cmap="viridis")
-
-    fig.colorbar(im, ax=ax, label="Final magnetization")
-    ax.set_xticks(np.arange(len(param2)))
-    ax.set_xticklabels(param2, rotation=45)
-    ax.set_yticks(np.arange(len(param1)))
-    ax.set_yticklabels(np.round(param1, 2))
-
-    ax.set_xlabel("External field activation time $t_0$")
-    ax.set_ylabel("Coupling strength $J$")
-    ax.set_title("Effect of delayed external field on polarization")
-
-    fig.tight_layout()
-
-    return grid, fig
