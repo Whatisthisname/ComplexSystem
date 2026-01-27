@@ -31,7 +31,7 @@ def generate_erdos_renyi_sparse_adjacency_matrix(
     return sparse_adj_mat.Sparse_Adjacency_Matrix(adj_mat)
 
 
-#this code was developed with the use of GPT4 after prompting it with pseudo code
+# this code was developed with the use of GPT4 after prompting it with pseudo code
 def generate_scale_free_sparse_adjacency_matrix_jax(
     num_nodes: int,
     num_edge: int,
@@ -101,12 +101,16 @@ def generate_scale_free_sparse_adjacency_matrix_jax(
         available_mask = jnp.arange(num_nodes) < node_id
         degree_slice = jnp.where(available_mask, degrees, 0)
         probs = degree_slice / (jnp.sum(degree_slice) + 1e-10)  # avoid division by zero
-        
+
         # sample attachment targets from all possible targets (with masking)
         # Use gumbel-max trick to sample without replacement in a differentiable way
-        gumbels = -jnp.log(-jnp.log(jax.random.uniform(subkey_nodes, shape=(num_nodes,))))
+        gumbels = -jnp.log(
+            -jnp.log(jax.random.uniform(subkey_nodes, shape=(num_nodes,)))
+        )
         # mask out unavailable nodes and nodes we've already selected
-        masked_gumbels = jnp.where(available_mask, gumbels + jnp.log(probs + 1e-10), -jnp.inf)
+        masked_gumbels = jnp.where(
+            available_mask, gumbels + jnp.log(probs + 1e-10), -jnp.inf
+        )
         # get top num_edge indices
         targets = jnp.argsort(-masked_gumbels)[:num_edge]
 
@@ -134,12 +138,12 @@ def generate_scale_free_sparse_adjacency_matrix_jax(
     return sparse_adj_mat.Sparse_Adjacency_Matrix(adj)
 
 
-#this code was developed with the use of GPT4 after prompting it with pseudo code
+# this code was developed with the use of GPT4 after prompting it with pseudo code
 def generate_small_world_sparse_adjacency_matrix_jax(
     num_nodes: int,
     k: int,
     p: float,
-    weight_range= (-1.0, 1.0),
+    weight_range=(-1.0, 1.0),
     seed: int = 0,
 ):
     """
@@ -164,7 +168,7 @@ def generate_small_world_sparse_adjacency_matrix_jax(
     Sparse_Adjacency_Matrix
         Symmetric unweighted adjacency matrix.
     """
-    #checks
+    # checks
     assert k % 2 == 0, "k must be even for ring lattice construction"
     assert 0.0 <= p <= 1.0, "p must lie in [0, 1]"
     assert k < num_nodes, "k must be smaller than num_nodes"
@@ -227,9 +231,9 @@ def generate_small_world_sparse_adjacency_matrix_jax(
         edge_indices,
     )
 
-    #weigth range
+    # weigth range
     w_min, w_max = weight_range
-    #assign random symmetric weigths to existing edges
+    # assign random symmetric weigths to existing edges
     key1, _ = jax.random.split(key)
     weights = jax.random.uniform(
         key=key1, minval=w_min, maxval=w_max, shape=(num_nodes, num_nodes)
