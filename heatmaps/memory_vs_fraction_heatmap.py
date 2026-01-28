@@ -38,10 +38,10 @@ def the_function(population_fraction: float, memory: float, steps: int) -> float
     for i in range(25):
         network = ising_efficient.BeliefNetwork(
             sparse_adj=adj_mat,
-            external_field=lambda t, node_idx: -10
+            external_field=lambda t, node_idx: 10
             * ((node_idx[0] / len(adj_mat)) < population_fraction)
             * (jnp.exp(-(((t - alpha) / gamma) ** 2))),
-            init_state=ones_init,
+            init_state=-ones_init,
             µ=memory,
             beta=1.5,  # 1.1
             μ_is_weighted_according_to_neighborhood_size=False,
@@ -50,11 +50,12 @@ def the_function(population_fraction: float, memory: float, steps: int) -> float
         result = network.run_for_steps(steps, seed=i)
         magnetization_erdos = np.mean(result[-1])
         signs.append(np.sign(magnetization_erdos))
+    print("fin")
 
     return np.mean(np.array(signs) > 0.0)
 
 
-n = 100
+n = 20
 low_res = [
     (p1, p2) for p1 in np.linspace(0.0, 1.0, n) for p2 in np.linspace(0.0, 1.0, n)
 ]
@@ -74,7 +75,7 @@ halton_seq = halton_seq * [(xmax - xmin), (ymax - ymin)] + [xmin, ymin]
 all_pairs = halton_seq
 all_pairs = [(x[0], x[1]) for x in all_pairs]
 
-file_name = "memory_vs_fraction_temp_1.5.pkl"
+file_name = "memory_vs_fraction_temp_1.5_v2.pkl"
 
 data_file = file_name
 all_data = []
@@ -101,6 +102,7 @@ with open(file_name, "wb") as f:
     pickle.dump(all_data, f)
 
 pairs = np.array([[x[0], x[1]] for x in all_data])
+
 fraction = np.array([x[2] for x in all_data])
 
 
@@ -110,4 +112,5 @@ voronoi.plot_triples(
     colorbarlabel="Fraction of positive final magnetizations across runs",
     xlabel="Fraction of Population exposed to event",
     ylabel="Memory coefficient",
+    title=r"Memory Experiment with $\beta = 1.5$",
 )

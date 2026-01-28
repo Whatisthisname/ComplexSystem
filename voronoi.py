@@ -91,7 +91,9 @@ def voronoi_finite_polygons_2d(vor, radius=None):
     return new_regions, np.asarray(new_vertices)
 
 
-def plot_triples(pairs, values, colorbarlabel: str, xlabel: str, ylabel: str):
+def plot_triples(
+    pairs, values, colorbarlabel: str, xlabel: str, ylabel: str, title: str
+):
     vor = Voronoi(pairs)
     regions, vertices = voronoi_finite_polygons_2d(vor)
 
@@ -111,7 +113,8 @@ def plot_triples(pairs, values, colorbarlabel: str, xlabel: str, ylabel: str):
     )
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
-
+    plt.gca().set_aspect(1)
+    plt.title(title)
     plt.show()
 
 
