@@ -58,14 +58,14 @@ def main():
 	#lambda - fraction of people being exposed to the dynamic field
 	l = 0.4 # % get the field
 
-	n_frames = 30
-	l_space = np.linspace(.0, .8, n_frames)
+	n_frames = 100
+	l_space = np.linspace(.0, .35, n_frames)
 
 
 	µ = 0.9 #memory coefficient
 	beta = 1.0 #temperature
 
-	runs = 10
+	runs = 20
 
 	for l in tqdm(l_space, position=0):
 		print(l)
