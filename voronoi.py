@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial import Voronoi
 
+
 def voronoi_finite_polygons_2d(vor, radius=None):
     """
     Reconstruct infinite voronoi regions in a 2D diagram to finite
@@ -67,7 +68,7 @@ def voronoi_finite_polygons_2d(vor, radius=None):
 
             # Compute the missing endpoint of an infinite ridge
 
-            t = vor.points[p2] - vor.points[p1] # tangent
+            t = vor.points[p2] - vor.points[p1]  # tangent
             t /= np.linalg.norm(t)
             n = np.array([-t[1], t[0]])  # normal
 
@@ -81,7 +82,7 @@ def voronoi_finite_polygons_2d(vor, radius=None):
         # sort region counterclockwise
         vs = np.asarray([new_vertices[v] for v in new_region])
         c = vs.mean(axis=0)
-        angles = np.arctan2(vs[:,1] - c[1], vs[:,0] - c[0])
+        angles = np.arctan2(vs[:, 1] - c[1], vs[:, 0] - c[0])
         new_region = np.array(new_region)[np.argsort(angles)]
 
         # finish
@@ -90,10 +91,9 @@ def voronoi_finite_polygons_2d(vor, radius=None):
     return new_regions, np.asarray(new_vertices)
 
 
-def plot_triples(pairs, values, colorbarlabel : str, xlabel : str, ylabel : str):
+def plot_triples(pairs, values, colorbarlabel: str, xlabel: str, ylabel: str):
     vor = Voronoi(pairs)
     regions, vertices = voronoi_finite_polygons_2d(vor)
-
 
     # colorize
     for i, (region, frac) in enumerate(zip(regions, values)):
@@ -101,18 +101,22 @@ def plot_triples(pairs, values, colorbarlabel : str, xlabel : str, ylabel : str)
         c = plt.cm.viridis(frac)
         plt.fill(*zip(*polygon), alpha=1.0, color=c, linewidth=1)
 
-    plt.plot(pairs[:,0], pairs[:,1], 'ko', markersize=2)
+    # plt.plot(pairs[:,0], pairs[:,1], 'ko', markersize=2)
     plt.xlim(vor.min_bound[0], vor.max_bound[0])
     plt.ylim(vor.min_bound[1], vor.max_bound[1])
-    plt.colorbar(plt.cm.ScalarMappable(norm=plt.Normalize(vmin=0, vmax=1), cmap='viridis'), ax=plt.gca(), label=colorbarlabel)
+    plt.colorbar(
+        plt.cm.ScalarMappable(norm=plt.Normalize(vmin=0, vmax=1), cmap="viridis"),
+        ax=plt.gca(),
+        label=colorbarlabel,
+    )
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
 
     plt.show()
 
+
 # Example usage
 if __name__ == "__main__":
-
     # make up data points
     np.random.seed(1234)
     points = np.random.rand(15, 2)
@@ -121,14 +125,13 @@ if __name__ == "__main__":
     ys = np.linspace(0, 1, 13)
     X, Y = np.meshgrid(xs, ys)
     points = np.vstack([X.ravel(), Y.ravel()]).T
-    fraction = (points[:, 0]** 2 + points[:, 1]**2)
+    fraction = points[:, 0] ** 2 + points[:, 1] ** 2
 
     xs = np.linspace(0.3, 0.6, 19)
     ys = np.linspace(0.3, 0.6, 19)
     X, Y = np.meshgrid(xs, ys)
     points2 = np.vstack([X.ravel(), Y.ravel()]).T
-    fraction2 = (points2[:, 0]** 2 + points2[:, 1]**2)
-
+    fraction2 = points2[:, 0] ** 2 + points2[:, 1] ** 2
 
     points = np.vstack([points, points2])
     fraction = np.concatenate([fraction, fraction2])
@@ -136,6 +139,10 @@ if __name__ == "__main__":
     xs = np.linspace(0, 1, 11)
     ys = np.linspace(0, 1, 13)
 
-
-    plot_triples(pairs = points, values=fraction, colorbarlabel="Some Value", xlabel="X-axis", ylabel="Y-axis")
-
+    plot_triples(
+        pairs=points,
+        values=fraction,
+        colorbarlabel="Some Value",
+        xlabel="X-axis",
+        ylabel="Y-axis",
+    )
