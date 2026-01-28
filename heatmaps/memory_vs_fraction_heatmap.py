@@ -1,7 +1,6 @@
 import sys
 import os
 
-import jax
 import jax.numpy as jnp
 from matplotlib import pyplot as plt
 import numpy as np
@@ -16,15 +15,15 @@ sys.path.append(
 )
 import ising_efficient
 import network_generation
-import heatmap
 import voronoi
 import pickle
 import os
+from scipy.stats.qmc import Halton
 
 
 def the_function(population_fraction: float, memory: float, steps: int) -> float:
     adj_mat = network_generation.generate_erdos_renyi_sparse_adjacency_matrix(
-        num_nodes=100, edge_prob=20 / 100.0, weight_range=(-0.1, 0.2)
+        num_nodes=100, edge_prob=20 / 100.0, weight_range=(-0.04, 0.2)
     )
     # weight range changed from (-1,1.0) to (-0.1, 0.2) - individuals within the network tend to agree with their neighbours
 
@@ -36,7 +35,7 @@ def the_function(population_fraction: float, memory: float, steps: int) -> float
     # population_fraction - fraction of people being exposed to the dynamic field
 
     signs = []
-    for i in range(10):
+    for i in range(25):
         network = ising_efficient.BeliefNetwork(
             sparse_adj=adj_mat,
             external_field=lambda t, node_idx: -10
@@ -44,7 +43,7 @@ def the_function(population_fraction: float, memory: float, steps: int) -> float
             * (jnp.exp(-(((t - alpha) / gamma) ** 2))),
             init_state=ones_init,
             µ=memory,
-            beta=1.1,
+            beta=1.5,  # 1.1
             μ_is_weighted_according_to_neighborhood_size=False,
         )
 
@@ -55,16 +54,27 @@ def the_function(population_fraction: float, memory: float, steps: int) -> float
     return np.mean(np.array(signs) > 0.0)
 
 
-n = 16
+n = 100
 low_res = [
     (p1, p2) for p1 in np.linspace(0.0, 1.0, n) for p2 in np.linspace(0.0, 1.0, n)
 ]
-# high_res = [
-#     (p1, p2) for p1 in np.linspace(0.3, 1.0, 12) for p2 in np.linspace(0.5, 1.0, 5)
-# ]
-all_pairs = low_res
 
-file_name = "memory_vs_fraction.pkl"
+# xmin = 0.0 # fraction
+# xmax = 0.3
+# ymin = 0.6 # memory
+# ymax = 1.0
+xmin = 0.0  # fraction
+xmax = 1.0
+ymin = 0.0  # memory
+ymax = 1.0
+
+halton_sampler = Halton(d=2, scramble=False)
+halton_seq = halton_sampler.random(n)
+halton_seq = halton_seq * [(xmax - xmin), (ymax - ymin)] + [xmin, ymin]
+all_pairs = halton_seq
+all_pairs = [(x[0], x[1]) for x in all_pairs]
+
+file_name = "memory_vs_fraction_temp_1.5.pkl"
 
 data_file = file_name
 all_data = []
@@ -97,7 +107,7 @@ fraction = np.array([x[2] for x in all_data])
 voronoi.plot_triples(
     pairs,
     fraction,
-    colorbarlabel="Fraction of Positive Final States",
-    xlabel="Population Fraction Exposed",
-    ylabel="Memory_coefficient",
+    colorbarlabel="Fraction of positive final magnetizations across runs",
+    xlabel="Fraction of Population exposed to event",
+    ylabel="Memory coefficient",
 )
