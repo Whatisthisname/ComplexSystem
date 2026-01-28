@@ -103,7 +103,7 @@ def plot_triples(
         c = plt.cm.viridis(frac)
         plt.fill(*zip(*polygon), alpha=1.0, color=c, linewidth=1)
 
-    # plt.plot(pairs[:,0], pairs[:,1], 'ko', markersize=2)
+    # plt.plot(pairs[:, 0], pairs[:, 1], "ko", markersize=2)
     plt.xlim(vor.min_bound[0], vor.max_bound[0])
     plt.ylim(vor.min_bound[1], vor.max_bound[1])
     plt.colorbar(
