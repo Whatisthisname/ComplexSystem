@@ -6,32 +6,36 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-def approx_global_coefficient(
-    state,
-    nbs,
-    interval = 100,
-    trials = 10
-):
+
+def approx_global_coefficient(state, nbs, interval=100, trials=10) -> float:
+    """
+    Approximates the global clustering coefficient by sampling two neighbours of the 
+    same belief 'trials' times and checking the existence of and edge between them, 
+    completing a closed triangle.
+    Returns the fraction of closed triangles devided by the number of trials taken.
+    """
     n = len(state)
     assert (trials < n)
 
     closed_triang = 0
     for trial in [int(random.random() * n) for _ in range(trials)]:
-        sec_ord_connections = [x for x in nbs[trial] if state[x] == state[trial]]
+        sec_ord_connections = [
+            x for x in nbs[trial] if state[x] == state[trial]]
         if len(sec_ord_connections) < 2:
             continue
         u, v = random.sample(sec_ord_connections, 2)
         if v in nbs[u]:
             closed_triang += 1
 
-    return closed_triang / n
+    return closed_triang / trials
+
 
 def approx_global_coefficients_over_time(
     sparse_adj,
     states,
-    interval = 100,
-    trials = 200
-):
+    interval=100,
+    trials=200
+) -> dict[float]:
     nbs, _ = sparse_adj.precompute_neighbors_and_weights()
     nbs = [np.asarray(nb[nb > -1]) for nb in nbs]
 
@@ -39,6 +43,7 @@ def approx_global_coefficients_over_time(
     for state_i in range(0, len(states), interval):
         results[state_i] = approx_global_coefficient(states[state_i], nbs)
     return results
+
 
 def get_local_coefficients(
     state,
@@ -61,18 +66,19 @@ def get_local_coefficients(
 
             for edge in nbs[nb]:
                 if edge == node_i \
-                or edge not in first_ord_conn \
-                or set([nb, edge]) in sec_ord_connections:
+                        or edge not in first_ord_conn \
+                        or set([nb, edge]) in sec_ord_connections:
                     continue
 
                 sec_ord_connections.append(set([nb, edge]))
         results[node_i] = len(sec_ord_connections) / poss_connections
     return results
 
+
 def get_local_coefficients_over_time(
-    sparse_adj:np.ndarray,
-    states:np.ndarray,
-    interval:int = 100
+    sparse_adj: np.ndarray,
+    states: np.ndarray,
+    interval: int = 100
 ) -> dict[int, dict[int, float]]:
     n_states = len(states)
     nbs, _ = sparse_adj.precompute_neighbors_and_weights()
@@ -131,9 +137,3 @@ glob_coeff_over_time = approx_global_coefficients_over_time(
 
 
 print(glob_coeff_over_time)
-
-
-
-
-
-
