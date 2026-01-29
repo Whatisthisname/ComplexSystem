@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 adj_mat = network_generation.generate_erdos_renyi_sparse_adjacency_matrix(
-    num_nodes=10, edge_prob=0.1
+    num_nodes=3, edge_prob=0.5
 )
 
 random_init = jax.random.randint(
@@ -23,9 +23,10 @@ network = ising_efficient.BeliefNetwork(
     init_state=random_init,
     µ=0.9,
     beta=0.5,
+    μ_is_weighted_according_to_neighborhood_size=True,
 )
 
-result = network.run_for_steps(200)
+result = network.run_for_steps(1, seed=0)
 magnetization = np.mean(result, axis=1)
 plt.plot(magnetization)
 plt.show()
