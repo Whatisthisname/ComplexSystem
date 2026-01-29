@@ -22,7 +22,7 @@ import pickle
 import os
 from scipy.stats.qmc import Halton
 
-#beta is the inverse of the temperature parameter
+
 def the_function(
     population_fraction: float,
     beta: float,
@@ -84,9 +84,9 @@ def the_function(
     return np.mean(np.array(signs) > 0.0)
 
 
-topology: typing.Literal["Erdos", "Scale-Free", "Small-World"] = "Erdos"
+topology: typing.Literal["Erdos", "Scale-Free", "Small-World"] = "Scale-Free"
 
-n_points = 100
+n_points = 300
 
 xmin = 0.0  # fraction
 xmax = 1.0
@@ -137,4 +137,5 @@ voronoi.plot_triples(
     colorbarlabel="Fraction of positive final magnetizations across runs",
     xlabel="Fraction of Population\nexposed to event",
     ylabel="Inverse Temperature",
+    title=f"Experiment on {topology}-network",
 )
