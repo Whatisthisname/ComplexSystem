@@ -20,6 +20,7 @@ class Sparse_Adjacency_Matrix:
             "The adjacency matrix should be all zeros on the diagonal, meaning no self-loops in the graph, but there are some nonzeros."
         )
         adjacency_matrix = 0.5 * (adjacency_matrix + adjacency_matrix.T)
+        self._adjacency_matrix = adjacency_matrix
         self.n_rows, self.n_cols = adjacency_matrix.shape
         self.data = []
         self.indices = []

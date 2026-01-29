@@ -83,7 +83,7 @@ def the_function(
     return np.mean(np.array(signs) > 0.0)
 
 
-topology: typing.Literal["Erdos", "Scale-Free", "Small-World"] = "Scale-Free"
+topology: typing.Literal["Erdos", "Scale-Free", "Small-World"] = "Small-World"
 
 n_points = 300
 
