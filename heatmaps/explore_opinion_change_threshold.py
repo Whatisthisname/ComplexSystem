@@ -22,7 +22,7 @@ import pickle
 import os
 from scipy.stats.qmc import Halton
 
-
+#beta is the inverse of the temperature parameter
 def the_function(
     population_fraction: float,
     beta: float,

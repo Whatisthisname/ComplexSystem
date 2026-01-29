@@ -1,5 +1,6 @@
 import sys
 import os
+import typing
 
 import jax.numpy as jnp
 from matplotlib import pyplot as plt
@@ -21,10 +22,46 @@ import os
 from scipy.stats.qmc import Halton
 
 
-def the_function(population_fraction: float, memory: float, steps: int) -> float:
-    adj_mat = network_generation.generate_erdos_renyi_sparse_adjacency_matrix(
-        num_nodes=100, edge_prob=20 / 100.0, weight_range=(-0.04, 0.2)
+def the_function(
+    population_fraction: float,
+    memory: float,
+    steps: int,
+    topology: typing.Literal["Erdos", "Small-World", "Scale-Free"],
+) -> float:
+    nodes = 100
+    expected_edges = int(0.2 * (nodes * (nodes - 1)) / 2)
+    print(expected_edges)
+    if topology == "Erdos":
+        adj_mat = network_generation.generate_erdos_renyi_sparse_adjacency_matrix(
+            num_nodes=nodes,
+            edge_prob=2 * expected_edges / (nodes * (nodes - 1)), 
+            weight_range=(-0.04, 0.2)
+        )
+    elif topology == "Scale-Free":
+        k_avg = 2 * expected_edges / nodes
+        num_edge = max(1, int(k_avg / 2))  # Ensure at least one edge
+
+        adj_mat = network_generation.generate_scale_free_sparse_adjacency_matrix_jax(
+            num_nodes=nodes,
+            num_edge=num_edge,
+            weight_range=(-0.04, 0.2)
+        )
+    elif topology == "Small-World":
+        k_avg = 2 * expected_edges / nodes
+        k = max(2, int(k_avg))
+        if k % 2 != 1:
+            k += 1
+
+        adj_mat = network_generation.generate_small_world_sparse_adjacency_matrix_jax(
+            num_nodes=nodes,    
+            k=k,
+            p=0.1,
+            weight_range=(-0.04, 0.2)
     )
+    else:
+        raise Exception(
+            """'topology' argument is invalid. Must be one of "Erdos", "Small-World", or "Scale-Free" """
+        )   
     # weight range changed from (-1,1.0) to (-0.1, 0.2) - individuals within the network tend to agree with their neighbours
 
     ones_init = jnp.ones(shape=(len(adj_mat),)).astype(int)
@@ -58,6 +95,7 @@ n = 100
 low_res = [
     (p1, p2) for p1 in np.linspace(0.0, 1.0, n) for p2 in np.linspace(0.0, 1.0, n)
 ]
+
 
 # xmin = 0.0 # fraction
 # xmax = 0.3
