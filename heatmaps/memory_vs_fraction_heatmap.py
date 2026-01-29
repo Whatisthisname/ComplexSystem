@@ -2,9 +2,9 @@ import sys
 import os
 
 import jax.numpy as jnp
-from matplotlib import pyplot as plt
 import numpy as np
 
+# We have to do this to import from outside the parent directory
 sys.path.append(
     os.path.abspath(
         os.path.join(
@@ -22,6 +22,18 @@ from scipy.stats.qmc import Halton
 
 
 def the_function(population_fraction: float, memory: float, steps: int) -> float:
+    """
+    Docstring for the_function
+
+    :param population_fraction: fraction of people being exposed to the dynamic field
+    :type population_fraction: float
+    :param memory: The value of the memory parameter. Should be in [0, 1]
+    :type memory: float
+    :param steps: How many steps to run the simulation for
+    :type steps: int
+    :return: Returns the fraction of simulations that had their steady state with a positive magnetization.
+    :rtype: float
+    """
     adj_mat = network_generation.generate_erdos_renyi_sparse_adjacency_matrix(
         num_nodes=100, edge_prob=20 / 100.0, weight_range=(-0.04, 0.2)
     )
@@ -31,9 +43,8 @@ def the_function(population_fraction: float, memory: float, steps: int) -> float
     alpha = 100  # time of the peak
     gamma = 5  # width of the peak
 
-    # population_fraction - fraction of people being exposed to the dynamic field
-
     signs = []
+    # Runs 15 simulations per parameter set.
     for i in range(15):
         network = ising_efficient.BeliefNetwork(
             sparse_adj=adj_mat,
@@ -54,46 +65,7 @@ def the_function(population_fraction: float, memory: float, steps: int) -> float
     return np.mean(np.array(signs) > 0.0)
 
 
-# if True:
-#     adj_mat = network_generation.generate_erdos_renyi_sparse_adjacency_matrix(
-#         num_nodes=100, edge_prob=20 / 100.0, weight_range=(-0.04, 0.2)
-#     )
-
-#     ones_init = jnp.ones(shape=(len(adj_mat),)).astype(int)
-
-#     alpha = 100  # time of the peak
-#     gamma = 5  # width of the peak
-
-#     # population_fraction - fraction of people being exposed to the dynamic field
-
-#     network = ising_efficient.BeliefNetwork(
-#         sparse_adj=adj_mat,
-#         external_field=lambda t, node_idx: 10
-#         * ((node_idx[0] / len(adj_mat)) < 0.1)
-#         * (jnp.exp(-(((t - alpha) / gamma) ** 2))),
-#         init_state=-ones_init,
-#         µ=1.0,
-#         beta=1.5,  # 1.1
-#         μ_is_weighted_according_to_neighborhood_size=False,
-#     )
-
-#     result = network.run_for_steps(250, seed=1)
-#     magnetization_erdos = np.mean(result, axis=1)
-#     plt.plot(magnetization_erdos)
-#     plt.show()
-
-#     exit()
-
-
 n = 50
-low_res = [
-    (p1, p2) for p1 in np.linspace(0.0, 1.0, n) for p2 in np.linspace(0.0, 1.0, n)
-]
-
-# xmin = 0.0 # fraction
-# xmax = 0.3
-# ymin = 0.6 # memory
-# ymax = 1.0
 xmin = 0.2  # fraction
 xmax = 0.3
 ymin = 0.5  # memory

@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
+# We have to do this to import from outside the parent directory
 sys.path.append(
     os.path.abspath(
         os.path.join(
@@ -18,6 +19,16 @@ import network_generation
 
 
 def get_final_magnetization(inv_temp: float, seed: int) -> float:
+    """
+    Docstring for get_final_magnetization
+
+    :param inv_temp: The inverse temperature at which to simulate the network.
+    :type inv_temp: float
+    :param seed: The seed to run the network for reproducibility reasons
+    :type seed: int
+    :return: The average magnetization of the last 5 timesteps
+    :rtype: float
+    """
     adj_mat = network_generation.generate_erdos_renyi_sparse_adjacency_matrix(
         num_nodes=100, edge_prob=0.2, weight_range=(-0.04, 0.2)
     )

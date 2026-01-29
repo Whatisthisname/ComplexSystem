@@ -2,11 +2,10 @@ import sys
 import os
 import typing
 
-import jax
 import jax.numpy as jnp
-from matplotlib import pyplot as plt
 import numpy as np
 
+# We have to do this to import from outside the parent directory
 sys.path.append(
     os.path.abspath(
         os.path.join(

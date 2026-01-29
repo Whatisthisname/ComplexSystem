@@ -1,14 +1,13 @@
-# Source - https://stackoverflow.com/a
-# Posted by pv., modified by community. See post 'Timeline' for change history
-# Retrieved 2026-01-26, License - CC BY-SA 3.0
-
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial import Voronoi
+import typing
 
 
 def voronoi_finite_polygons_2d(vor, radius=None):
     """
+    Taken from https://stackoverflow.com/a/20678647
+
     Reconstruct infinite voronoi regions in a 2D diagram to finite
     regions.
 
@@ -92,8 +91,29 @@ def voronoi_finite_polygons_2d(vor, radius=None):
 
 
 def plot_triples(
-    pairs, values, colorbarlabel: str, xlabel: str, ylabel: str, title: str
+    pairs: typing.Sequence[tuple[float, float]],
+    values: typing.Sequence[float],
+    colorbarlabel: str,
+    xlabel: str,
+    ylabel: str,
+    title: str,
 ):
+    """
+    Docstring for plot_triples
+
+    :param pairs: A list of (a, b) where a and b are certain parameter values that were used to get a third value.
+    :type pairs: typing.Sequence[tuple[float, float]]
+    :param values: A list of "c" where c is the result of the corresponding function called with (a, b) as input.
+    :type values: typing.Sequence[float]
+    :param colorbarlabel: What text to add on the values
+    :type colorbarlabel: str
+    :param xlabel: The x axis label
+    :type xlabel: str
+    :param ylabel: The y axis label
+    :type ylabel: str
+    :param title: The title of the plot
+    :type title: str
+    """
     vor = Voronoi(pairs)
     regions, vertices = voronoi_finite_polygons_2d(vor)
 
@@ -148,4 +168,5 @@ if __name__ == "__main__":
         colorbarlabel="Some Value",
         xlabel="X-axis",
         ylabel="Y-axis",
+        title="Title",
     )

@@ -1,3 +1,5 @@
+"""Example code on how to use the network."""
+
 import ising_efficient
 import network_generation
 import jax.numpy as jnp

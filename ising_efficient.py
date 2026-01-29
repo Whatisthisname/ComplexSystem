@@ -89,7 +89,25 @@ class BeliefNetwork:
         seed: int,
         *params,
     ):
-        def _step(carry: tuple[State, State], xs) -> tuple[tuple[State, State], State]:
+        """
+        Internal JIT compiled function to be called from the initialized class. Let 'n' be the size of the network.
+
+        :param steps: The amount of timesteps to run the simulation for.
+        :type steps: int
+        :param neighbors: A (n, b) int array where b is an upper bound on the max network degree. Holds the value '-1' to represent None
+        :param weights: A (n, b) int array where b is an upper bound on the max network degree. Holds the value 0.0
+        :param init_state: An (n,) int array holding the initial state of each node.
+        :type init_state: State
+        :param field: The (potentially) time-varying field that will nudge the nodes to change belief.
+        :type field: Field
+        :param μ_is_weighted_according_to_neighborhood_size: Default False. If True, will multiply the effect of the past state by the neighborhood size (per node), which allows the nodes to "hear themselves", even in networks with high average degrees.
+        :type μ_is_weighted_according_to_neighborhood_size: bool
+        :param seed: For reproducibility, determines how the next state is sampled.
+        :type seed: int
+        :param params: Holds eventual extra parameters.
+        """
+
+        def __step(carry: tuple[State, State], xs) -> tuple[tuple[State, State], State]:
             state, prev_state = carry
             t, key = xs
 
@@ -107,7 +125,7 @@ class BeliefNetwork:
             return (new_state, state), new_state
 
         (last_state, prev_state), all_states = jax.lax.scan(
-            f=_step,
+            f=__step,
             init=(init_state, init_state),
             xs=(jnp.arange(steps), jax.random.split(jax.random.PRNGKey(seed), steps)),
         )
@@ -127,6 +145,19 @@ class BeliefNetwork:
         µ_is_weighted_according_to_neighborhood_size: bool,
         *params,
     ) -> State:
+        """
+        See docstring for `_run_for_steps` for remaining parameter meanings.
+
+        :param state: The current state.
+        :type state: State
+        :param prev_state: The previous state.
+        :type prev_state: State
+        :param t: The current time step. This is only used as information for the time-varying external field.
+        :type t: int
+        :param key: The JAX PRNGKey used to sample the next state.
+        :return: Returns the next sampled state
+        :rtype: State
+        """
         (µ, beta) = params
         n = neighbors.shape[0]
         new_state = jnp.zeros_like(state)

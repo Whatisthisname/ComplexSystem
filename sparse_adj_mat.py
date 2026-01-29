@@ -6,6 +6,12 @@ class Sparse_Adjacency_Matrix:
     """A compact storage format for adjacency matrices that allows efficient retrieval of neighbors from a given node."""
 
     def __init__(self, adjacency_matrix: np.ndarray):
+        """
+        Construct an instance of the class. Takes an adjacency matrix and packs it compactly in memory, allowing fast traversal of local neighborhoods.
+
+        :param adjacency_matrix: Some symmetric square matrix with floating point entries corresponding to edge weights. Self loops not allowed.
+        :type adjacency_matrix: np.ndarray
+        """
         n = adjacency_matrix.shape[0]
         assert np.allclose(
             (adjacency_matrix + adjacency_matrix.T) * 0.5, adjacency_matrix
