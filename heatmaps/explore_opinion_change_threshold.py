@@ -2,11 +2,10 @@ import sys
 import os
 import typing
 
-import jax
 import jax.numpy as jnp
-from matplotlib import pyplot as plt
 import numpy as np
 
+# We have to do this to import from outside the parent directory
 sys.path.append(
     os.path.abspath(
         os.path.join(
@@ -84,7 +83,23 @@ def the_function(
     return np.mean(np.array(signs) > 0.0)
 
 
-topology: typing.Literal["Erdos", "Scale-Free", "Small-World"] = "Scale-Free"
+if False:
+    ts = np.arange(250)
+    alpha = 100  # time of the peak
+    gamma = 5  # width of the peak
+    ys = 10 * jnp.exp(-(((ts - alpha) / gamma) ** 2))
+
+    import matplotlib.pyplot as plt
+
+    plt.plot(ts, ys, label="External field")
+    plt.legend()
+    plt.xlabel("Time")
+    plt.ylabel("Field strength")
+    plt.show()
+
+    exit()
+
+topology: typing.Literal["Erdos", "Scale-Free", "Small-World"] = "Small-World"
 
 n_points = 300
 
