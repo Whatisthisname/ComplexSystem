@@ -34,14 +34,13 @@ def test_local_coefficient():
     ])
     nbs, _ = Sparse_Adjacency_Matrix(adj).precompute_neighbors_and_weights()
     state = jnp.ones(shape=(len(adj)))
-
     answer = jnp.asarray([0, 1, 1 / 3, 1])
 
     assert jnp.allclose(get_local_coefficients(state, nbs), answer)
 
 
 def test_global_coefficient():
-    n_samples = 200
+    n_samples = 250
     adj = jnp.array([
         [0, 1, 1, 0],
         [1, 0, 1, 0],
