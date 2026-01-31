@@ -64,12 +64,12 @@ def main():
     µ = 0.9  # memory coefficient
     beta = 1.0  # temperature
 
-    runs = 20
+    n_runs = 20
 
     # walk over parameter lambda
     for l in tqdm(l_space, position=0):
         data = []
-        for seed in tqdm(range(runs), position=1):
+        for seed in tqdm(range(n_runs), position=1):
             network = ising_efficient.BeliefNetwork(
                 sparse_adj=adj_mat,
                 external_field=external_field,
@@ -79,9 +79,9 @@ def main():
             )
             data.append(network.run_for_steps(n_steps, seed=seed))
 
-        filename = f"./data/erdos_renyi_la_{np.round(l, 3)}.pkl"
-        os.makedirs(os.path.dirname(filename), exist_ok=True)
-        with open(filename, "wb") as file:
+        filename = f"./results/lambda_walk/erdos_renyi_la_{np.round(l, 3)}.pkl"
+        os.makedirs(os.path.dirname(filename), exist_ok=True)  # create storage file
+        with open(filename, "wb") as file:  # store in designated folder and file
             pickle.dump(np.asarray(data), file)
 
 
