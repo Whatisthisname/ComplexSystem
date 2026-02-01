@@ -28,7 +28,7 @@ network = ising_efficient.BeliefNetwork(
     μ_is_weighted_according_to_neighborhood_size=True,
 )
 
-result = network.run_for_steps(1, seed=0)
+result = network.run_for_steps(100, seed=0)
 magnetization = np.mean(result, axis=1)
 plt.plot(magnetization)
 plt.show()
