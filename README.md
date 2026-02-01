@@ -93,7 +93,7 @@ To replicate the findings of this study, execute the scripts in the following or
 * Run: python bifurcation/bifurcation.py
 * Analyze: Use bifurcation/bifurcation.ipynb to visualize the steady-state magnetization
 ### 2. Voronoi Parameter Search 
-see how different topologies (Erdős-Rényi, Small-World, Scale-Free) respond to propaganda events (Hypothesis 2)
+See how different topologies (Erdős-Rényi, Small-World, Scale-Free) respond to propaganda events (Hypothesis 2). There is a `topology` string that should be changed to one of three literals to get the three different graphs.
 * Run: python heatmaps/*.py
 ### 3. Dynamics & GIF Generation
 * Run: python topology_simulation.py and use the gif_generation.ipynb notebook. This produces figures saved in the results folder.
