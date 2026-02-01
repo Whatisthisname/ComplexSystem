@@ -31,15 +31,22 @@ Dorogovtsev, S. N., Goltsev, A. V., & Mendes, J. F. F. (2008). Critical phenomen
 
 ### Timeline 
 20.01 - Submit Project plan 
+
 22.01 - Reproduce baseline Ising/Potts model without external field 
 -Implement network generation (Erdős–Rényi, Small-World, Scale-Free) 
+
 23.01 - Perform temperature sweeps and identify phase transitions 
-- Generate bifurcation plots and example trajectories 
-26.01 - Finalised core model implementation 
+- Generate bifurcation plots and example trajectories
+  
+26.01 - Finalised core model implementation
+  
 28.01 – Compare robustness across network topologies 
   – Finalize numerical results and report draft 
+  
 29.01 - Presentation prep and finalise slides 
+
 30.01 - Presentation 
+
 01.02 - Clean up codebase and documentation
 
 ## Installation & Setup
