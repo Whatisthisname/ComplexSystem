@@ -5,10 +5,11 @@ This is the repo that holds code to reproduce all of our results and figures.
 The simulator itself cannot use any `assert` statements, as these cannot be compiled into JAX code, however, we do use `assert` statements in other reused library code, and test some code with `pytest`, see below.
 
 ## Installation & Setup
-
+<pre>
 Bash
 git clone [repo-url]
 pip install -r requirements.txt
+</pre>
 
 ## Code and what it does
 
