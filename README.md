@@ -6,8 +6,7 @@ The simulator itself cannot use any `assert` statements, as these cannot be comp
 
 ## Installation & Setup
 <pre>
-Bash
-git clone [repo-url]
+git clone [git@github.com:Whatisthisname/ComplexSystem.git]
 pip install -r requirements.txt
 </pre>
 
