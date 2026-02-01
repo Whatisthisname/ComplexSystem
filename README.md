@@ -36,9 +36,23 @@ pip install -r requirements.txt
 
 `voronoi.py` has code to plot the voronoi diagrams. Partially it is code from stackoverflow that we have cited in the file as well.
 
-
 `diameter.ipynb` can compute the diameter of a network, where we also group by belief beforehand.
 
 `project_report.ipynb` was our intermediate results-gathering place.
 
 `gif_generation.ipynb`, well, generates GIFs.
+
+# Reproducing Our Results
+To replicate the findings of this study, execute the scripts in the following order. 
+### 1. Phase Transitions (Bifurcation)
+* Run: python bifurcation/bifurcation.py
+* Analyze: Use bifurcation/bifurcation.ipynb to visualize the steady-state magnetization
+### 2. Voronoi Parameter Search 
+see how different topologies (Erdős-Rényi, Small-World, Scale-Free) respond to propaganda events (Hypothesis 2)
+* Run: python heatmaps/*.py
+### 3. Dynamics & GIF Generation
+* Run: python topology_simulation.py and use the gif_generation.ipynb notebook. This produces figures saved in the results folder.
+### 4. Memory Coefficient analysis (Hypothesis 3)
+* Run: Execute the memory-specific Voronoi scripts in the heatmaps/ directory.
+### 5. Network Structure (Clustering Coefficients)
+* Run: python plot_clustering.py - approximate clustering coefficients over time to see how components merge or fragment during exposure.
