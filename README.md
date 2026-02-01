@@ -12,9 +12,12 @@ This project aims to investigate the sudden transition from neutrality or consen
  
 ## Research questions and hypotheses 
 *RQ:* How do propaganda events alter the critical threshold at which a social network transitions to a different belief state? 
+
 *H1:* There exists a temperature threshold separating disordered opinion dynamics from ordered consensus states in the absence of external influence. 
-H2: For a fixed temperature, increasing the memory coefficient increases the robustness of the system against external influence, requiring a larger fraction of exposed agents to induce global opinion alignment. 
-H3: Network topology affects the system’s vulnerability to external perturbations, with Scale-Free networks being more susceptible due to the presence of highly connected hubs. 
+
+*H2:* For a fixed temperature, increasing the memory coefficient increases the robustness of the system against external influence, requiring a larger fraction of exposed agents to induce global opinion alignment. 
+
+*H3:* Network topology affects the system’s vulnerability to external perturbations, with Scale-Free networks being more susceptible due to the presence of highly connected hubs. 
 
 ## Method and concept  
 The framework utilises a dynamic mean-field framework with a Three-State Potts Model to simulate disinformation adoption on a social network graph. This approach divides the population into three belief categories: adoption, rejection, and neutrality of the disinformed belief. This approach also incorporated a heterogeneous coupling strength, meaning the coupling strength accounts for hubs which exert stronger pulling forces, thus closer mirroring the dynamics of real-world scale-free networks. Furthermore, this study also closely simulates human psychology through memory effects, where a memory coefficient allows an individual’s prior beliefs to influence their current state. Finally, Monte Carlo simulations will be conducted, which will allow for the observation of transient dynamics.   
@@ -51,7 +54,7 @@ Dorogovtsev, S. N., Goltsev, A. V., & Mendes, J. F. F. (2008). Critical phenomen
 
 ## Installation & Setup
 <pre>
-git clone [git@github.com:Whatisthisname/ComplexSystem.git]
+git clone https://github.com/Whatisthisname/ComplexSystem.git
 pip install -r requirements.txt
 </pre>
 
